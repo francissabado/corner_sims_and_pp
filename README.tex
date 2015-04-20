@@ -1,0 +1,89 @@
+\documentclass{article}
+\usepackage{graphicx}
+\begin{document}
+\title{Script for cross-corner simulations}
+\author{Rakesh K K\\rakeshkk@ee.iitb.ac.in}
+\maketitle
+This document gives an overview of the script which is written to simplify the work of simulationg cross-corner simulation in cadence design environment. 
+
+\section{Using the script}
+\begin{itemize}
+\item Copy the scripts simulate\_regress.il and simulate\_regress.pl to directory of your choice. 
+    	For simplicity, you can shoose this directory to be the one where virtuoso/icfb is invoked.
+\item In the directory where virtuoso/icfb is invoked, open the file .cdsinit and add the line \texttt{load "<PATH of simulate\_regress.il file>"} to it.
+\item First, run a simple simulation using ADE. So that netlist files get created. 
+    	This netlist file is then used by the script for cross-corner simulations
+\item Go to the schematic window and press the keys \textbf{"Ctrl+Q"}. This should pop up a gedit(text editor) window with some pre-written lines it. 
+    	Pre-written lines are the syntax of the input file for the cross-corner simulation script. It looks as below.\\
+	\texttt{\#File created by the script simulate\_regress.il\\
+	\#Mail to rakeshkk@ee.iitb.ac.in\\
+	\#corners\\
+	\#(SS,SS\_res,TT\_cap),120\\
+	\#(TT,FF\_res,FF\_cap),000\\
+	\#end\_corners\\
+	\#process\\
+	(SS,SS\_res,TT\_cap)\\
+	(TT,FF\_res,FF\_cap)\\
+	\#end\_process\\
+	\#temp\\
+	80\\
+	40\\
+	\#end\_temp}\\
+	In the file "\#" implies a comment. If any old line is to be commented, add a \# infront of that line. 
+	However, \# infront of the lines with the keywords 'corners', 'process' and 'temp' are for the scripting convinience.
+\item Once necessary editing is done in the file which is open, it can be closed. 
+\item On closing the text editor, a terminal window pops up. Simulations start running.	
+\item Once the simulations are done, they can be viewed using waveform viewer. 
+    	The simulation results will be saved in the same hieracrchy as before with the directory name as \textbf{cross\_corner}.
+\end{itemize}
+
+\section{Details about the script}
+Script is mainly divided into two parts. viz., SKILL and PERL. 
+SKILL part is to interface the script with the schematic (cadence environment). 
+PERL part of the script will create the directory structure and then simulate.
+\subsection{SKILL script}
+The file name of the SKILL script is simulate\_regress.il. 
+This file creates the input file which is required by the PERL script. 
+
+The script can be executed by clicking the keys \textbf{"Ctrl+Q"} in the schematic window. 
+Please note that before executing this, a simple simulation must be run using ADE so that netlist is already created. 
+
+On pressing the keys, a text editor window will open with the syntax prewritten in the file. 
+While editing this file, please make sure that the name of the cornes are you have given are valid ones. 
+It is also to be noted that, unless the opened text file is closed, Cadence will not respond. 
+Once the file is closed, cadence will start responding. 
+Also, on closing the file, SKILL executes PERL script in a newly opened terminal. 
+
+
+\subsection{PERL script}
+The file name of the PERL script is simulate\_regress.pl. The file is to be saved in the same directory as that of the simulate\_regress.il.
+
+Following is the sequence of the functions by PERL script.
+\begin{itemize}
+\item The script deletes older simulation data, if any. 
+\item It checks the input file and creates the directories according to the number of combinations in the input file.
+\item From the previously run simulation(using ADE) output data, the netlist file is taken. This netlist is copied to all the new directories created.
+\item Once the netlist file is copied, the process corners and temperatures are modified in the respective folders.
+\item Simulations are run after modifications. 
+\end{itemize}
+
+\subsection{Details about input file}
+There are currently 3 sections allowed in the input file. \\
+The allowed sections are corners, process and temp. Corners is the keyword where the process-temp combination can be given. Syntax of the file should be as in fig.\ref{fig:input_file}. 
+
+If all the lines in the section 'corners' are commented, then the script considers the other sections process and temp. 
+When they are considered, the simulations will be run for all the combinations of process and temp. \\
+
+\begin{figure}[htp]
+\centering
+\includegraphics[scale=0.60]{/home/rakesh/scripts/cross_corner_sim/corner_info_file.jpg}
+\caption{Screenshot of the input file which is to be filled for cross-corner simulations}
+\label{fig:input_file}
+\end{figure}
+\begin{figure}[htp]
+\centering
+\includegraphics[scale=0.60]{/home/rakesh/scripts/cross_corner_sim/konsole.jpg}
+\caption{Screesnhot of the terminal which opens once the PERL script starts running after the text editor is closed}
+\label{}
+\end{figure}
+\end{document}
