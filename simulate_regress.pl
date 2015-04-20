@@ -191,7 +191,9 @@ print FINAL_CSV "process,,,,temp,";
 for $key (keys(%print_commands)){
     	$to_save=$print_commands{$key};
 	chomp($to_save);
-    	push @to_save,$to_save;
+	@to_save_now=split(/\n/,$to_save);
+    	push @to_save,@to_save_now;
+	print "PUSHING $to_save\n";
 	print LOGFILE $print_commands{$key};
 }
 %seen=();

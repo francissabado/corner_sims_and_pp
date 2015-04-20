@@ -33,7 +33,7 @@ $measurement_now=0;
 while($line=<CORNER>){
     chomp($line);
     $line=~s/[\s\t]*$//;
-    print "$.:$line\n";
+    #print "$.:$line\n";
     if($line!~/^#/ && $keyword_found==0){
     	print LOGFILE "Ignoring the line $.:Not inside keywords\n";
     }
@@ -43,7 +43,7 @@ while($line=<CORNER>){
     	}
 	if($keyword_processing eq "temp"){
 	    push @temp,$line;
-	    print "Temp is $line\n";
+	    #print "Temp is $line\n";
 	}
 	if($keyword_processing eq "process"){	
 	    push @process,$line;
@@ -79,7 +79,7 @@ while($line=<CORNER>){
 	else{
 	    $keyword_processing=$1;
 	    $keyword_found=1;
-	    print "Keyword found and line is $line\n";
+	    #print "Keyword found and line is $line\n";
 	    if($keyword_processing eq "measure"){
 	    	$measurement_now=1;
 	    }
@@ -97,10 +97,10 @@ if(@corners!=0){
     @temp=();
     @process=();
     foreach $corner (@corners){
-    	print "$corner\n";
+    	#print "$corner\n";
     	$process=$1 if($corner=~/\((.+)\)/);
 	$temp=$1 if($corner=~/\(.+\),([+-]*\d+)\s*$/);
-	print "Directory $rundir/../cross_corner/process_$process\_temp_$temp/netlist/\n";
+	#print "Directory $rundir/../cross_corner/process_$process\_temp_$temp/netlist/\n";
     	if(! -d "$rundir/../cross_corner/process_$process\_temp_$temp/netlist/"){
 	    print "Creating the directory $rundir/../cross_corner/process_$process\_temp_$temp/netlist/\n";
 	    #system("mkdir -p $rundir/../cross_corner/process_$process\_temp_$temp/netlist/");	    
@@ -112,8 +112,8 @@ if(@corners!=0){
 	@model_file=split(/\n/,$model_file);
 	$model_file=$model_file[0];
 	$model_file=$1 if($model_file=~/include \"(.+)\"/g);
-	print "Model file is $model_file\n";
-    	print "sed -i '/^include/d' $rundir/../cross_corner/process_$process\_temp_$temp/netlist/input.scs\n";
+	#print "Model file is $model_file\n";
+    	#print "sed -i '/^include/d' $rundir/../cross_corner/process_$process\_temp_$temp/netlist/input.scs\n";
 	#`sed -i 's/temp=[0-9.+-]* /temp=$temp /g' $rundir/../cross_corner/process_$process\_temp_$temp/netlist/input.scs`;
 	#`sed -i '/^include/d' $rundir/../cross_corner/process_$process\_temp_$temp/netlist/input.scs`;
 	@process_corners=split(/,/, $process);
@@ -132,7 +132,7 @@ else{
     foreach $process_with_brackets (@process){
     	$process=$1 if($process_with_brackets=~/\((.+)\)/);
     	foreach $temp (@temp){
-	    print "Process is $process and Temp is $temp\n";
+	    #print "Process is $process and Temp is $temp\n";
     	    if(! -d "$rundir/../cross_corner/process_$process\_temp_$temp/netlist"){
 	    	print "Creating the directory $rundir/../cross_corner/process_$process\_temp_$temp/netlist\n";
 	    	#system("mkdir -p $rundir/../cross_corner/process_$process\_temp_$temp/netlist");	    
@@ -143,8 +143,8 @@ else{
 	    @model_file=split(/\n/,$model_file);
 	    $model_file=$model_file[0];
 	    $model_file=$1 if($model_file=~/include \"(.+)\"/g);
-	    print "Model file is $model_file\n";
-    	    print "sed -i '/^include/d' $rundir/../cross_corner/process_$process\_temp_$temp/input.scs\n";
+	    #print "Model file is $model_file\n";
+    	    #print "sed -i '/^include/d' $rundir/../cross_corner/process_$process\_temp_$temp/input.scs\n";
 	    #`sed -i 's/temp=[0-9.+-]* /temp=$temp /g' $rundir/../cross_corner/process_$process\_temp_$temp/netlist/input.scs`;
 	    #`sed -i '/^include/d' $rundir/../cross_corner/process_$process\_temp_$temp/netlist/input.scs`;
 	    @process_corners=split(/,/, $process);
@@ -165,26 +165,26 @@ else{
 
 close(CORNER);
 
-open MEASUREMENT, ">$rundir/../cross_corner/measurement.ocn" or die "System failure\n";
+#open MEASUREMENT, ">$rundir/../cross_corner/measurement.ocn" or die "System failure\n";
 
 foreach $psf_dir (@psf_dirs){
-    print MEASUREMENT "out_file=outfile(\"$psf_dir/../result.csv\" \"w\")\n";
-    print MEASUREMENT "openResults(\"$psf_dir\")\n";
+    #print MEASUREMENT "out_file=outfile(\"$psf_dir/../result.csv\" \"w\")\n";
+    #print MEASUREMENT "openResults(\"$psf_dir\")\n";
     foreach $sim_type (keys(%measure_commands)){
-    	print MEASUREMENT "selectResults('$sim_type)\n";
-	print MEASUREMENT $measure_commands{$sim_type}."\n";
+    	#print MEASUREMENT "selectResults('$sim_type)\n";
+	#print MEASUREMENT $measure_commands{$sim_type}."\n";
 	@to_save=split(/\n/,$print_commands{$sim_type});   
 	foreach $to_save (@to_save){  
-    	    print MEASUREMENT "fprintf(out_file \"$to_save,%s \\n\" pcExprToString($to_save))\n";
+    	    #print MEASUREMENT "fprintf(out_file \"$to_save,%s \\n\" pcExprToString($to_save))\n";
 	    print LOGFILE "TO SAVE: $to_save\n";
 	}
     }
-    print MEASUREMENT "close(out_file)\n";
+    #print MEASUREMENT "close(out_file)\n";
 }
-print MEASUREMENT "exit";
-close(MEASUREMENT);
+#print MEASUREMENT "exit";
+#close(MEASUREMENT);
 
-system("ocean < $rundir/../cross_corner/measurement.ocn");
+#system("ocean < $rundir/../cross_corner/measurement.ocn");
 
 open FINAL_CSV, ">$rundir/../cross_corner/results.csv" or die "Can not open file\n";
 %results_of_corners={};
@@ -202,7 +202,7 @@ for $key (keys(%print_commands)){
 print FINAL_CSV "$_," foreach @to_save;
 print FINAL_CSV "\n";
 for $psf_dir (@psf_dirs){
-    #print $psf_dir."\n";
+    print $psf_dir."\n";
     @results_for_this_corner=();
     if($psf_dir=~/process_(.+)_temp_(.+)\/psf/){
     	$process=$1;
@@ -214,7 +214,7 @@ for $psf_dir (@psf_dirs){
     close(RESULTCSV);
     foreach $file_content (@file_content){
     	chomp($file_content);
-	print $file_content."\n";
+	#print $file_content."\n";
 	@line_contents=split(/,/,$file_content);
 	    	push @results_for_this_corner,@line_contents;
 	%results_for_this_corner=@results_for_this_corner;
